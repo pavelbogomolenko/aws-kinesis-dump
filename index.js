@@ -20,16 +20,21 @@ const kinesis = new AWS.Kinesis({
   apiVersion: '2013-12-02'
 });
 
-const logRecords = (recordsData) => {
-  _.get(recordsData, 'Records', [])
-  .forEach((record) => {
-    const data = new Buffer(record.Data, 'base64').toString();
-    try {
-      logger.info(_.extend({record: JSON.parse(data)}, _.omit(recordsData, 'Records')));
-    } catch(e) {
-      logger.info(_.extend({record: data}, _.omit(recordsData, 'Records')));
-    }
-  });
+const logRecords = (data) => {
+  const dataWithoutRecords = _.omit(data, 'Records');
+  const records = _.get(data, 'Records', []);
+  if(_.size(records)) {
+    return records.forEach((record) => {
+        const base64String = new Buffer(record.Data, 'base64').toString();
+        try {
+          logger.info(_.extend({record: JSON.parse(base64String)}, dataWithoutRecords));
+        } catch(e) {
+          logger.info(_.extend({record: base64String}, dataWithoutRecords));
+        }
+      });
+  }
+
+  return logger.info(dataWithoutRecords);
 }
 
 const dumpStream = async(function* (streamConfig) {
