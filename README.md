@@ -21,3 +21,11 @@ You can pipe result into bunyan for better visual representation.
 ```sh
 node index.js | node_modules/.bin/bunyan
 ```
+
+Or even better if you familiar with [`jq`](https://stedolan.github.io/jq/) tool pipe it
+there and enjoy quering JSON output like a boss.
+
+```sh
+node index.js | jq "."
+```
+
