@@ -24,13 +24,16 @@ const logRecords = (recordsData) => {
   _.get(recordsData, 'Records', [])
   .forEach((record) => {
     const data = new Buffer(record.Data, 'base64').toString();
-    logger.info(data);
+    try {
+      logger.info(_.extend({record: JSON.parse(data)}, _.omit(recordsData, 'Records')));
+    } catch(e) {
+      logger.info(_.extend({record: data}, _.omit(recordsData, 'Records')));
+    }
   });
 }
 
 const dumpStream = async(function* (streamConfig) {
   const streamDescriptionResponse = yield kinesis.describeStream(params).promise();
-  logger.info(streamDescriptionResponse);
 
   const shards = _.get(streamDescriptionResponse, 'StreamDescription.Shards');
 
@@ -45,7 +48,7 @@ const dumpStream = async(function* (streamConfig) {
   });
 
   const allResults = yield Promise.all(recordsPromises);
-  allResults.forEach(results => logRecords(results));
+  allResults.forEach(results => logRecords(_.extend(results, streamDescriptionResponse)));
 });
 
 const params = config.kinesis;
