@@ -3,6 +3,11 @@
 Dumps periodically (each 5 seconds) records from all shards of the specified [AWS Kinesis Stream](https://aws.amazon.com/kinesis/streams/).
 Maybe usefully for monitoring and/or debugging your streams.
 
+Installation:
+```sh
+npm i # or yarn
+```
+
 All you need to do is to define StreamName in the config.js.
 
 To run it just execute node index.js.
